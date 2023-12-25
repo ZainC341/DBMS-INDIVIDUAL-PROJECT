@@ -1,0 +1,195 @@
+
+
+
+DROP TABLE IF EXISTS TracksProcess
+DROP TABLE IF EXISTS TracksDepartment
+DROP TABLE IF EXISTS TracksAssembly
+DROP TABLE IF EXISTS Recorded
+DROP TABLE IF EXISTS Manufacture
+DROP TABLE IF EXISTS Orders
+DROP TABLE IF EXISTS Process_account
+DROP TABLE IF EXISTS Department_account
+DROP TABLE IF EXISTS Assembly_account
+DROP TABLE IF EXISTS Account
+DROP TABLE IF EXISTS Transactions
+DROP TABLE IF EXISTS Fit_job
+DROP TABLE IF EXISTS Paint_job
+DROP TABLE IF EXISTS Cut_job
+DROP TABLE IF EXISTS Job
+DROP TABLE IF EXISTS Department
+DROP TABLE IF EXISTS Cut_process
+DROP TABLE IF EXISTS Fit_process
+DROP TABLE IF EXISTS Paint_process
+DROP TABLE IF EXISTS Process
+DROP TABLE IF EXISTS Assemblies
+DROP TABLE IF EXISTS Customer
+
+--Create Tables
+CREATE TABLE Customer (
+    name VARCHAR(255) PRIMARY KEY,
+    address VARCHAR(255),
+    category INT CHECK (category BETWEEN 1 AND 10)
+)
+
+CREATE TABLE Assemblies (
+    assembly_id INT PRIMARY KEY,
+    date_ordered DATE,
+    assembly_details VARCHAR(200)
+);
+
+CREATE TABLE Process (
+    process_id INT PRIMARY KEY,
+    process_data VARCHAR(200),
+    department_number INT,
+    department_data VARCHAR(255),
+);
+
+CREATE TABLE Department (
+    process_id INT,
+    department_number INT,
+    department_data VARCHAR(255),
+    PRIMARY KEY (process_id, department_number, department_data),
+    FOREIGN KEY (process_id) REFERENCES Process(process_id)
+);
+
+CREATE TABLE [Paint_process] (
+    [process_id] INT PRIMARY KEY,
+    [paint_type] VARCHAR(50),
+    [painting_method] VARCHAR(50),
+    FOREIGN KEY (process_id) REFERENCES Process(process_id)
+);
+
+CREATE TABLE [Fit_process] (
+    [process_id] INT PRIMARY KEY,
+    [fit_type] VARCHAR(50)
+    FOREIGN KEY (process_id) REFERENCES Process(process_id)
+);
+
+CREATE TABLE [Cut_process] ( 
+    [process_id] INT PRIMARY KEY,
+    [cutting_type] VARCHAR(50),
+    [cutting_method] VARCHAR(50)
+    FOREIGN KEY (process_id) REFERENCES Process(process_id)
+);
+
+CREATE TABLE Job (
+    job_number INT PRIMARY KEY,
+    commenced_date DATE,
+    completed_date DATE
+);
+
+CREATE TABLE [Cut_job] (
+    [job_number] INT PRIMARY KEY,
+    [machine_types] VARCHAR(50),
+    [time_machines_used] VARCHAR(50),
+    [material_used] VARCHAR(50),
+    [labor_time] FLOAT,
+    FOREIGN KEY (job_number) REFERENCES Job(job_number)
+);
+
+CREATE TABLE [Paint_job] (
+    [job_number] INT PRIMARY KEY,
+    [color] VARCHAR(50),
+    [volume] FLOAT,
+    [labor_time] FLOAT,
+    FOREIGN KEY (job_number) REFERENCES Job(job_number)
+);
+
+CREATE TABLE [Fit_job] (
+    [job_number] INT PRIMARY KEY,
+    [labor_time] FLOAT,
+    FOREIGN KEY (job_number) REFERENCES Job(job_number)
+);
+
+CREATE TABLE Account (
+    account_number INT PRIMARY KEY,
+    established_date DATE
+);
+
+CREATE TABLE [Assembly_account] (
+    [account_number] INT PRIMARY KEY,
+    [details_1] VARCHAR(255),
+    FOREIGN KEY (account_number) REFERENCES Account(account_number)
+);
+
+CREATE TABLE [Department_account] (
+    [account_number] INT PRIMARY KEY,
+    [details_2] VARCHAR(255),
+    FOREIGN KEY (account_number) REFERENCES Account(account_number)
+);
+
+CREATE TABLE Transactions (
+    transaction_number INT PRIMARY KEY,
+    sup_cost FLOAT,
+    account_number INT,
+    FOREIGN KEY (account_number) REFERENCES Account(account_number)
+);
+
+CREATE TABLE [Process_account] (
+    [account_number] INT PRIMARY KEY,
+    [details_3] VARCHAR(255),
+    FOREIGN KEY (account_number) REFERENCES Account(account_number)
+);
+
+CREATE TABLE Orders (
+    name VARCHAR(255),
+    Assembly_ID INT,
+    PRIMARY KEY (name, Assembly_ID),
+    FOREIGN KEY (name) REFERENCES Customer(name),
+    FOREIGN KEY (Assembly_ID) REFERENCES Assemblies(assembly_id)
+);
+
+CREATE TABLE Manufacture (
+    assembly_id INT,
+    process_id INT,
+    job_number INT,
+    PRIMARY KEY (assembly_id, process_id),
+    FOREIGN KEY (assembly_id) REFERENCES Assemblies(assembly_id),
+    FOREIGN KEY (process_id) REFERENCES Process(process_id),
+    FOREIGN KEY (job_number) REFERENCES Job(job_number)
+);
+
+CREATE TABLE Recorded (
+    job_number INT,
+    transaction_number INT,
+    PRIMARY KEY (job_number, transaction_number),
+    FOREIGN KEY (job_number) REFERENCES Job(job_number),
+    FOREIGN KEY (transaction_number) REFERENCES Transactions(transaction_number)
+);
+
+CREATE TABLE TracksAssembly (
+    account_number INT,
+    assembly_id INT,
+    PRIMARY KEY (account_number, assembly_id),
+    FOREIGN KEY (account_number) REFERENCES Account(account_number),
+    FOREIGN KEY (assembly_id) REFERENCES Assemblies(assembly_id)
+);
+
+CREATE TABLE TracksDepartment (
+    account_number INT,
+    process_id INT,
+    department_number INT,
+    department_data VARCHAR(255),
+    PRIMARY KEY (account_number, process_id),
+    FOREIGN KEY (account_number) REFERENCES Account(account_number),
+    FOREIGN KEY (process_id, department_number, department_data) REFERENCES Department(process_id, department_number, department_data)
+);
+
+CREATE TABLE TracksProcess (
+    account_number INT,
+    process_id INT,
+    PRIMARY KEY (account_number, process_id),
+    FOREIGN KEY (account_number) REFERENCES Account(account_number),
+    FOREIGN KEY (process_id) REFERENCES Process(process_id)
+);
+
+
+
+
+
+
+
+
+
+
+
